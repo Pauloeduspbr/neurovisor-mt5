@@ -49,6 +49,8 @@ Uso educacional e de análise técnica. Não constitui recomendação de investi
 
 C++ (DLL) and MQL5 port of a Machine Learning indicator for MetaTrader 5 — a simple feedforward neural network that produces a price prediction and lets you visualize the loss curve (MSE) during training.
 
+![NeuroVisor](screenshot.png)
+
 ### What it is
 
 This repository is a technical port of the Pine indicator "Machine Learning using Neural Networks | Educational", published on TradingView by Alien_Algorithms, reimplemented from scratch in C++ and MQL5 (no line of the original script was reused — only the logic).
