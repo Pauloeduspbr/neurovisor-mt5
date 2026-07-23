@@ -2,6 +2,8 @@
 
 Porte em C++ (DLL) e MQL5 de um indicador de Machine Learning para MetaTrader 5 — uma rede neural feedforward simples que gera previsão de preço e permite visualizar a curva de perda (MSE) durante o treino.
 
+**🇧🇷 Português** · [🇺🇸 English](#english)
+
 ![NeuroVisor](screenshot.png)
 
 ## O que é
@@ -40,3 +42,46 @@ Este repositório é licenciado sob CC-BY-NC-SA-4.0; a lógica original em Pine 
 ## Aviso
 
 Uso educacional e de análise técnica. Não constitui recomendação de investimento.
+
+---
+
+## English
+
+C++ (DLL) and MQL5 port of a Machine Learning indicator for MetaTrader 5 — a simple feedforward neural network that produces a price prediction and lets you visualize the loss curve (MSE) during training.
+
+### What it is
+
+This repository is a technical port of the Pine indicator "Machine Learning using Neural Networks | Educational", published on TradingView by Alien_Algorithms, reimplemented from scratch in C++ and MQL5 (no line of the original script was reused — only the logic).
+
+The engine implements a feedforward neural network with 1 hidden layer of 2 neurons:
+
+- **Forward pass**: matrix multiplication (weights `w1` input→hidden, `w2` hidden→output) with a sigmoid activation at each layer.
+- **Training**: on every confirmed bar, the network runs `epochs` iterations of backpropagation over the normalized/standardized price, adjusting `w1`/`w2` by gradient descent with a configurable learning rate (`Learning Rate`). Two backprop variants are available — plain and verbose —, replicating the two equivalent functions from the original script.
+- **Initialization**: weights are randomized on every training run, with a seed for reproducibility within the engine itself. Declared caveat: Pine's `math.random(seed)` generator is not a publicly documented API; the port uses an LCG (linear congruential generator) that is behaviorally equivalent — convergence and loss-curve shape match the original — but the absolute initial weight values are not bit-for-bit reproducible against the Pine script. This is a platform limitation, not a limitation of the port.
+- **Output**: the network's price prediction is plotted over the actual price; optionally, the MSE curve over training epochs is plotted in a separate panel.
+
+The DLL is stateless: the weights (`w1`/`w2`) cross the C++↔MQL5 boundary by parameter (`double*`, in and out) and live in an MQL5-side buffer, per chart instance — which prevents two indicator instances (two charts or symbols) from sharing the same training state.
+
+Intended use: studying the mechanics of a neural network (forward pass, backpropagation, gradient, loss curve) applied to price data — this is not a ready-made entry/exit signal generator.
+
+## Installation — precompiled version
+
+1. Copy `neural_net.dll` into your MetaTrader 5 terminal's `MQL5/Libraries` folder.
+2. Copy `TV_04_NeuralNet.ex5` into `MQL5/Indicators`.
+3. Restart MetaTrader 5 (or, in the Navigator, right-click "Indicators" and refresh the list).
+4. Drag the `TV_04_NeuralNet` indicator onto the chart.
+
+### Build from source
+
+1. Compile the C++ code (`neural_net`) with g++/MinGW-w64, using the `build.sh` script included in `src/cpp/`. This produces `neural_net.dll` (x64).
+2. Open `src/mql5/TV_04_NeuralNet.mq5` in MetaEditor (bundled with MetaTrader 5).
+3. Compile with F7 to produce the `.ex5`.
+4. Copy the generated artifacts (`neural_net.dll` and `TV_04_NeuralNet.ex5`) into the terminal folders per the installation steps above.
+
+### License
+
+This repository is licensed under CC-BY-NC-SA-4.0; the original Pine Script logic was authored by Alien_Algorithms (TradingView), independently reimplemented here in C++ and MQL5.
+
+### Disclaimer
+
+Educational and technical-analysis use only. Not investment advice.
